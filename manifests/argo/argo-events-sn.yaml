@@ -1,0 +1,64 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Sensor
+metadata:
+  name: sensor
+spec:
+  template:
+    serviceAccountName: argo-events-sa
+  subscription:
+    http:
+      port: 9300
+  dependencies:
+    - name: bucket-notification
+      gatewayName: gateway
+      eventName: new-data-notification
+  triggers:
+    - template:
+        name: argo-workflow
+        k8s:
+          group: argoproj.io
+          version: v1alpha1
+          resource: workflows
+          operation: create
+          source:
+            resource:
+              apiVersion: argoproj.io/v1alpha1
+              kind: Workflow
+              metadata:
+                generateName: odh-ml-pipelines-
+              spec:
+                entrypoint: entrypoint
+                arguments:
+                  parameters:
+                    - name: message
+                templates:
+                  - name: entrypoint
+                    inputs:
+                      parameters:
+                        - name: key
+                    outputs:
+                      artifacts:
+                        - name: output
+                          path: "/tmp/output.txt"
+                          archive:
+                            none: {}
+                          s3:
+                            endpoint: s3.upshift.redhat.com:443
+                            bucket: BUCKET_NAME
+                            key: "processe_data/{{inputs.parameters.key}} "
+                            accessKeySecret:
+                              key: accesskey
+                              name: CEPH_SECRET
+                            secretKeySecret:
+                              key: secretkey
+                              name: CEPH_SECRET
+                    container:
+                      image: docker/whalesay:latest
+                      command: [sh, -c]
+                      args:
+                        - "cowsay {{inputs.parameters.key}} | tee /tmp/output.txt"
+          parameters:
+            - src:
+                dependencyName: bucket-notification
+                dataKey: notification.0.s3.object.key
+              dest: spec.arguments.parameters.0.value

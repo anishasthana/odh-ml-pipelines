@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+commonLabels:
+  app.kubernetes.io/component: argo
+
+resources:
+  - ./argo-events-minio-es.yaml
+  - ./argo-events-minio-gw.yaml
+  - ./argo-events-sn.yaml

@@ -1,0 +1,14 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: argo
+  labels:
+    app.kubernetes.io/component: argo
+  annotations:
+    openshift.io/host.generated: 'true'
+spec:
+  to:
+    kind: Service
+    name: argo-server
+  port:
+    targetPort: web

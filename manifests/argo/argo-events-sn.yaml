@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Sensor
 metadata:
-  name: sensor
+  name: minio
 spec:
   template:
     serviceAccountName: argo-events-sa
@@ -9,12 +9,12 @@ spec:
     http:
       port: 9300
   dependencies:
-    - name: bucket-notification
-      gatewayName: gateway
+    - name: test-dep
+      gatewayName: minio
       eventName: new-data-notification
   triggers:
     - template:
-        name: argo-workflow
+        name: minio-workflow-trigger
         k8s:
           group: argoproj.io
           version: v1alpha1
@@ -25,40 +25,20 @@ spec:
               apiVersion: argoproj.io/v1alpha1
               kind: Workflow
               metadata:
-                generateName: odh-ml-pipelines-
+                generateName: artifact-workflow-2-
               spec:
-                entrypoint: entrypoint
-                arguments:
-                  parameters:
-                    - name: message
+                entrypoint: whalesay
                 templates:
-                  - name: entrypoint
-                    inputs:
-                      parameters:
-                        - name: key
-                    outputs:
-                      artifacts:
-                        - name: output
-                          path: "/tmp/output.txt"
-                          archive:
-                            none: {}
-                          s3:
-                            endpoint: s3.upshift.redhat.com:443
-                            bucket: BUCKET_NAME
-                            key: "processe_data/{{inputs.parameters.key}} "
-                            accessKeySecret:
-                              key: accesskey
-                              name: CEPH_SECRET
-                            secretKeySecret:
-                              key: secretkey
-                              name: CEPH_SECRET
+                  - name: whalesay
                     container:
+                      command:
+                        - cowsay
                       image: docker/whalesay:latest
-                      command: [sh, -c]
                       args:
-                        - "cowsay {{inputs.parameters.key}} | tee /tmp/output.txt"
+                        - THIS_WILL_BE_REPLACED
+          # The container args from the workflow are overridden by the s3 notification key
           parameters:
             - src:
-                dependencyName: bucket-notification
+                dependencyName: test-dep
                 dataKey: notification.0.s3.object.key
-              dest: spec.arguments.parameters.0.value
+              dest: spec.templates.0.container.args.0

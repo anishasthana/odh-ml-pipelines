@@ -1,13 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Gateway
 metadata:
-  name: gateway
+  name: minio
 spec:
   type: minio
   eventSourceRef:
-    name: event-source
+    name: minio-event-source
   template:
     serviceAccountName: argo-events-sa
   subscribers:
     http:
-      - "http://sensor.NAMESPACE.svc:9300/"
+      - "http://minio-sensor.devconf.svc:9300/"

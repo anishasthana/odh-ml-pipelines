@@ -27,7 +27,6 @@ kind: Route
 apiVersion: route.openshift.io/v1
 metadata:
   name: minio
-  namespace: devcon-1
   annotations:
     openshift.io/host.generated: 'true'
 spec:

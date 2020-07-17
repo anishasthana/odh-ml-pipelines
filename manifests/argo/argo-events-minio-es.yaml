@@ -7,10 +7,12 @@ spec:
   minio:
     new-data-notification:
       bucket:
-        name: BUCKET_NAME
-      endpoint: MINIO_SERVER_HOST
+        name: input
+      endpoint: minio-devconf.apps.aasthana.dev.datahub.redhat.com
       events:
         - s3:ObjectCreated:Put
+        - s3:ObjectCreated:Copy
+        - s3:ObjectCreated:Post
       insecure: true
       accessKey:
         key: accesskey

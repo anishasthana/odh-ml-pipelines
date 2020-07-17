@@ -5,6 +5,15 @@ commonLabels:
   app.kubernetes.io/component: argo
 
 resources:
-  - ./argo-events-minio-es.yaml
-  - ./argo-events-minio-gw.yaml
-  - ./argo-events-sn.yaml
+  # Install argo Workflows and argo events
+  - https://raw.githubusercontent.com/argoproj/argo/v2.9.3/manifests/namespace-install.yaml
+  - https://raw.githubusercontent.com/argoproj/argo-events/v0.16.0/manifests/namespace-install.yaml
+  - argo-events-minio-es.yaml
+  - argo-events-minio-gw.yaml
+  - argo-events-sn.yaml
+  - argo-wf-route.yaml
+  - minio-secret.yaml
+
+patchesStrategicMerge:
+  - argo-events-gw-cfg.yaml
+  - argo-events-sn-cfg.yaml

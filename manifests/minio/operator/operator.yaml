@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio-operator
+spec:
+  template:
+    spec:
+      containers:
+        - name: minio-operator
+          image: minio/k8s-operator:2.0.9
+          imagePullPolicy: IfNotPresent

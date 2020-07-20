@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Sensor
 metadata:
-  name: sensor
+  name: minio
 spec:
   template:
     serviceAccountName: argo-events-sa
@@ -10,7 +10,7 @@ spec:
       port: 9300
   dependencies:
     - name: bucket-notification
-      gatewayName: gateway
+      gatewayName: minio
       eventName: new-data-notification
   triggers:
     - template:
@@ -28,37 +28,17 @@ spec:
                 generateName: odh-ml-pipelines-
               spec:
                 entrypoint: entrypoint
-                arguments:
-                  parameters:
-                    - name: message
                 templates:
                   - name: entrypoint
                     inputs:
                       parameters:
                         - name: key
-                    outputs:
-                      artifacts:
-                        - name: output
-                          path: "/tmp/output.txt"
-                          archive:
-                            none: {}
-                          s3:
-                            endpoint: s3.upshift.redhat.com:443
-                            bucket: BUCKET_NAME
-                            key: "processe_data/{{inputs.parameters.key}} "
-                            accessKeySecret:
-                              key: accesskey
-                              name: CEPH_SECRET
-                            secretKeySecret:
-                              key: secretkey
-                              name: CEPH_SECRET
                     container:
                       image: docker/whalesay:latest
-                      command: [sh, -c]
-                      args:
-                        - "cowsay {{inputs.parameters.key}} | tee /tmp/output.txt"
+                      command: [cowsay]
+                      args: ["{{inputs.parameters.key}}"]
           parameters:
             - src:
                 dependencyName: bucket-notification
                 dataKey: notification.0.s3.object.key
-              dest: spec.arguments.parameters.0.value
+              dest: spec.templates.0.inputs.parameters.0.value

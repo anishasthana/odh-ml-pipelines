@@ -8,3 +8,4 @@ resources:
   - ./argo-events-minio-es.yaml
   - ./argo-events-minio-gw.yaml
   - ./argo-events-sn.yaml
+  - ./workflow-controller-configmap.yaml

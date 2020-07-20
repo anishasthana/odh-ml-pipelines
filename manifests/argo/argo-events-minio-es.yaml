@@ -7,8 +7,8 @@ spec:
   minio:
     new-data-notification:
       bucket:
-        name: BUCKET_NAME
-      endpoint: MINIO_SERVER_HOST
+        name: input
+      endpoint: minio-internal-service.devconf.svc:9000
       events:
         - s3:ObjectCreated:Put
       insecure: true

@@ -3,8 +3,7 @@ Deploy minio standalone:
 ```bash
 oc new-project devconf
 $ cd manifests/minio 
-$ kustomize build operator/ | kubectl apply -f -
-$ kustomize build server/ | kubectl apply -f -
+$ kustomize build . | kubectl apply -f -
 ```
 
 Add MC host: 
@@ -13,7 +12,7 @@ Add MC host:
 $ mc config host add <ALIAS> <YOUR-S3-ENDPOINT> [YOUR-ACCESS-KEY] [YOUR-SECRET-KEY] [--api API-SIGNATURE]
 
 # Example: 
-$ mc config host add devconf http://minio-devconf.apps.aasthana.dev.datahub.redhat.com minio minio123 
+$ mc config host add devconf http://minio-devconf.apps.hukhan.dev.datahub.redhat.com minio minio123 
 ```
 
 Create a bucket: 

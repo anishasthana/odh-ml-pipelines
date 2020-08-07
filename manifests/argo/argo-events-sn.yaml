@@ -9,12 +9,12 @@ spec:
     http:
       port: 9300
   dependencies:
-    - name: test-dep
+    - name: bucket-notification
       gatewayName: minio
       eventName: new-data-notification
   triggers:
     - template:
-        name: minio-workflow-trigger
+        name: argo-workflow
         k8s:
           group: argoproj.io
           version: v1alpha1
@@ -25,20 +25,20 @@ spec:
               apiVersion: argoproj.io/v1alpha1
               kind: Workflow
               metadata:
-                generateName: artifact-workflow-2-
+                generateName: odh-ml-pipelines-
               spec:
-                entrypoint: whalesay
+                entrypoint: entrypoint
                 templates:
-                  - name: whalesay
+                  - name: entrypoint
+                    inputs:
+                      parameters:
+                        - name: key
                     container:
-                      command:
-                        - cowsay
                       image: docker/whalesay:latest
-                      args:
-                        - THIS_WILL_BE_REPLACED
-          # The container args from the workflow are overridden by the s3 notification key
+                      command: [cowsay]
+                      args: ["{{inputs.parameters.key}}"]
           parameters:
             - src:
-                dependencyName: test-dep
+                dependencyName: bucket-notification
                 dataKey: notification.0.s3.object.key
-              dest: spec.templates.0.container.args.0
+              dest: spec.templates.0.inputs.parameters.0.value

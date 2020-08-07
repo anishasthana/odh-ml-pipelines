@@ -17,15 +17,15 @@ $ mc config host add devconf http://minio-devconf.apps.hukhan.dev.datahub.redhat
 
 Create a bucket: 
 ```bash
-$ mc mb devconf/test-bucket
+$ mc mb devconf/input
 $ mc ls devconf
-[2020-07-17 13:13:48 EDT]      0B test-bucket/
+[2020-07-17 13:13:48 EDT]      0B input/
 ```
 
 Copy object to bucket: 
 ```bash
 $ touch test-copy.txt
-$ mc cp test-copy.txt devconf/test-bucket
+$ mc cp test-copy.txt devconf/input
 ```
 
 For more commands see [here](https://docs.min.io/docs/minio-client-quickstart-guide)

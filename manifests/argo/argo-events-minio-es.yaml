@@ -11,6 +11,8 @@ spec:
       endpoint: minio-internal-service.devconf.svc:9000
       events:
         - s3:ObjectCreated:Put
+        - s3:ObjectCreated:Copy
+        - s3:ObjectCreated:Post
       insecure: true
       accessKey:
         key: accesskey
